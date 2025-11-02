@@ -146,7 +146,7 @@ class AdvancedPreferences : PreferenceFragmentCompat() {
                 slider.stepSize = 1f
                 slider.value =
                     dockHeight.sharedPreferences!!.getString(dockHeight.key, "56")!!.toFloat()
-                slider.valueFrom = 50f
+                slider.valueFrom = 25f
                 slider.valueTo = 70f
                 slider.addOnChangeListener { _, value, _
                     ->
