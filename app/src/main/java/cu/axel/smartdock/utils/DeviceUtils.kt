@@ -6,25 +6,26 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
-import android.app.admin.DeviceAdminReceiver
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.hardware.display.DisplayManager
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.UserHandle
+import android.os.UserManager
 import android.provider.Settings
-import android.util.DisplayMetrics
 import android.view.Display
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.view.accessibility.AccessibilityManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
 import cu.axel.smartdock.services.DockService
 import java.io.BufferedReader
@@ -32,8 +33,6 @@ import java.io.DataOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
-import android.os.UserManager
-import androidx.core.net.toUri
 
 object DeviceUtils {
     const val DISPLAY_SIZE = "display_density_forced"
@@ -78,20 +77,6 @@ object DeviceUtils {
         return output.toString().trimEnd('\n')
     }
 
-    //Device control
-    fun lockScreen(context: Context) {
-        val devicePolicyManager =
-            context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        try {
-            devicePolicyManager.lockNow()
-        } catch (_: SecurityException) {
-        }
-    }
-
-    fun sendKeyEvent(keycode: Int) {
-        runAsRoot("input keyevent $keycode")
-    }
-
     fun softReboot() {
         runAsRoot("setprop ctl.restart zygote")
     }
@@ -101,7 +86,7 @@ object DeviceUtils {
     }
 
     fun shutdown() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) runAsRoot("am start -a android.intent.action.ACTION_REQUEST_SHUTDOWN") else runAsRoot(
+        runAsRoot(
             "am start -a com.android.internal.intent.action.REQUEST_SHUTDOWN"
         )
     }
@@ -177,23 +162,31 @@ object DeviceUtils {
     //Device info
     @SuppressLint("InternalInsetResource", "DiscouragedApi")
     fun getStatusBarHeight(context: Context): Int {
-        var result = 0
-        val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            result = context.resources.getDimensionPixelSize(resourceId)
-        }
-        return result
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val insets =
+            windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.statusBars())
+        return insets.top + insets.bottom
+
     }
 
     @SuppressLint("DiscouragedApi", "InternalInsetResource")
     fun getNavBarHeight(context: Context): Int {
-        var result = 0
-        val resourceId =
-            context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            result = context.resources.getDimensionPixelSize(resourceId)
+        //FIXME: This returns 0 with Dex
+        return try {
+            context.display
+            var result = 0
+            val resourceId =
+                context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+            if (resourceId > 0) {
+                result = context.resources.getDimensionPixelSize(resourceId)
+            }
+            result
+        } catch (_: UnsupportedOperationException) {
+            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val insets =
+                windowManager.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.navigationBars())
+            insets.top + insets.bottom
         }
-        return result
     }
 
     fun getUserName(context: Context): String? {
@@ -225,23 +218,31 @@ object DeviceUtils {
     }
 
     fun getSecondaryDisplay(context: Context): Display {
-        val displays = getDisplays(context, DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
-        return displays[0]
+        return getDisplays(context).last()
     }
 
-    fun getDisplayMetrics(
+    fun getDisplayBounds(
         context: Context,
         displayId: Int = Display.DEFAULT_DISPLAY
-    ): DisplayMetrics {
-        val dm = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-        val display = dm.getDisplay(displayId)
-        val metrics = DisplayMetrics()
-        display.getMetrics(metrics)
-        return metrics
+    ): Rect {
+        return try {
+            context.display
+            val dm = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+            val display = dm.getDisplay(displayId)
+            //FIXME: This always returns the metrics of the default display
+            //val metrics = DisplayMetrics()
+            //display.getRealMetrics(metrics)
+            Rect(0, 0, display.width, display.height)
+        } catch (_: UnsupportedOperationException) {
+            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            windowManager.currentWindowMetrics.bounds
+        }
     }
 
     fun getDisplayContext(context: Context, secondary: Boolean = false): Context {
-        return if (secondary) context.createDisplayContext(getSecondaryDisplay(context)) else context
+        return if (secondary && getDisplays(context).size > 1) context.createDisplayContext(
+            getSecondaryDisplay(context)
+        ) else context
     }
 
     @SuppressLint("PrivateApi")
@@ -313,29 +314,6 @@ object DeviceUtils {
             ),
             8
         )
-    }
-
-    fun requestDeviceAdminPermissions(context: Activity) {
-        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-        intent.putExtra(
-            DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-            ComponentName(context, DeviceAdminReceiver::class.java)
-        )
-        context.startActivityForResult(intent, 8)
-    }
-
-    fun isDeviceAdminEnabled(context: Context): Boolean {
-        val devicePolicyManager =
-            context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        val deviceAdmins = devicePolicyManager.activeAdmins
-        if (deviceAdmins != null) {
-            for (deviceAdmin in deviceAdmins) {
-                if (deviceAdmin.packageName == context.packageName) {
-                    return true
-                }
-            }
-        }
-        return false
     }
 
     fun hasRecentAppsPermission(context: Context): Boolean {

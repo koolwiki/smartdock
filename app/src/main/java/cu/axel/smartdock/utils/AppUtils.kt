@@ -12,7 +12,6 @@ import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.SystemClock
 import android.os.UserManager
 import android.view.Display
@@ -23,6 +22,7 @@ import cu.axel.smartdock.models.App
 import cu.axel.smartdock.models.AppTask
 import cu.axel.smartdock.models.DockApp
 import java.io.File
+import kotlin.math.max
 
 object AppUtils {
     const val PINNED_LIST = "pinned.lst"
@@ -34,13 +34,15 @@ object AppUtils {
         val packages = context.packageManager.getInstalledPackages(0)
         packages.forEach { packageInfo ->
             val appInfo = packageInfo.applicationInfo
-            apps.add(
-                App(
-                    appInfo.loadLabel(context.packageManager).toString(),
-                    appInfo.packageName,
-                    appInfo.loadIcon(context.packageManager)
+            if (appInfo != null) {
+                apps.add(
+                    App(
+                        appInfo.loadLabel(context.packageManager).toString(),
+                        appInfo.packageName,
+                        appInfo.loadIcon(context.packageManager)
+                    )
                 )
-            )
+            }
         }
         return apps.sortedWith(compareBy { it.name })
     }
@@ -152,11 +154,7 @@ object AppUtils {
     fun isGame(packageManager: PackageManager, packageName: String): Boolean {
         return try {
             val info = packageManager.getApplicationInfo(packageName, 0)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                info.category == ApplicationInfo.CATEGORY_GAME
-            } else {
-                info.flags and ApplicationInfo.FLAG_IS_GAME == ApplicationInfo.FLAG_IS_GAME
-            }
+            info.category == ApplicationInfo.CATEGORY_GAME
         } catch (_: PackageManager.NameNotFoundException) {
             false
         }
@@ -167,19 +165,6 @@ object AppUtils {
         intent.addCategory(Intent.CATEGORY_HOME)
         val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
         return resolveInfo!!.activityInfo.packageName
-    }
-
-    fun setWindowMode(activityManager: ActivityManager, taskId: Int, mode: Int) {
-        try {
-            val setWindowMode = activityManager.javaClass.getMethod(
-                "setTaskWindowingMode",
-                Int::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType,
-                Boolean::class.javaPrimitiveType
-            )
-            setWindowMode.invoke(activityManager, taskId, mode, false)
-        } catch (_: Exception) {
-        }
     }
 
     fun getRunningTasks(
@@ -201,13 +186,11 @@ object AppUtils {
                         packageManager
                     )
                 ) continue
-                if (Build.VERSION.SDK_INT > 29) {
-                    try {
-                        val isRunning = taskInfo.javaClass.getField("isRunning")
-                        val running = isRunning.getBoolean(taskInfo)
-                        if (!running) continue
-                    } catch (_: Exception) {
-                    }
+                try {
+                    val isRunning = taskInfo.javaClass.getField("isRunning")
+                    val running = isRunning.getBoolean(taskInfo)
+                    if (!running) continue
+                } catch (_: Exception) {
                 }
                 appTasks.add(
                     AppTask(
@@ -298,22 +281,22 @@ object AppUtils {
         var top = 0
         var right = 0
         var bottom = 0
-        val deviceWidth = DeviceUtils.getDisplayMetrics(context, displayId).widthPixels
-        val deviceHeight = DeviceUtils.getDisplayMetrics(context, displayId).heightPixels
-        val statusHeight = DeviceUtils.getStatusBarHeight(context)
+        val bounds = DeviceUtils.getDisplayBounds(context, displayId)
+        val deviceWidth = bounds.width()
+        val deviceHeight = bounds.height()
+        val statusBarHeight = DeviceUtils.getStatusBarHeight(context)
         val navHeight = DeviceUtils.getNavBarHeight(context)
-        val diff = if (dockHeight - navHeight > 0) dockHeight - navHeight else 0
-
         val usableHeight =
-            if (DeviceUtils.shouldApplyNavbarFix()) deviceHeight - diff - DeviceUtils.getStatusBarHeight(
-                context
-            )
-            else deviceHeight - dockHeight - DeviceUtils.getStatusBarHeight(context)
+            if (DeviceUtils.shouldApplyNavbarFix()) deviceHeight - max(
+                dockHeight,
+                navHeight
+            ) - statusBarHeight
+            else deviceHeight - dockHeight - statusBarHeight
         val scaleFactor = sharedPreferences.getString("scale_factor", "1.0")!!.toFloat()
         when (mode) {
             "standard" -> {
                 left = (deviceWidth / (5 * scaleFactor)).toInt()
-                top = ((usableHeight + statusHeight) / (7 * scaleFactor)).toInt()
+                top = ((usableHeight + statusBarHeight) / (7 * scaleFactor)).toInt()
                 right = deviceWidth - left
                 bottom = usableHeight + dockHeight - top
             }
@@ -337,7 +320,7 @@ object AppUtils {
 
             "tiled-top" -> {
                 right = deviceWidth
-                bottom = (usableHeight + statusHeight) / 2
+                bottom = (usableHeight + statusBarHeight) / 2
             }
 
             "tiled-right" -> {
@@ -348,8 +331,8 @@ object AppUtils {
 
             "tiled-bottom" -> {
                 right = deviceWidth
-                top = (usableHeight + statusHeight) / 2
-                bottom = usableHeight + statusHeight
+                top = (usableHeight + statusBarHeight) / 2
+                bottom = usableHeight + statusBarHeight
             }
         }
         return Rect(left, top, right, bottom)
@@ -361,28 +344,27 @@ object AppUtils {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val secondary = sharedPreferences.getBoolean("prefer_last_display", false)
 
-        val display: Int =
-            if (displayId != Display.DEFAULT_DISPLAY) displayId else (if (secondary) DeviceUtils.getSecondaryDisplay(
-                context
-            ).displayId else displayId)
+        val display =
+            if (displayId != Display.DEFAULT_DISPLAY)
+                displayId
+            else
+                if (secondary)
+                    DeviceUtils.getSecondaryDisplay(context).displayId
+                else 0
         val options: ActivityOptions = ActivityOptions.makeBasic()
 
         val windowMode: Int
         if (mode == "fullscreen") windowMode = 1
         else {
-            windowMode = if (Build.VERSION.SDK_INT >= 28) 5 else 2
-            options.setLaunchBounds(
-                makeLaunchBounds(
-                    context, mode, dockHeight, display
-                )
+            windowMode = 5
+            options.launchBounds = makeLaunchBounds(
+                context, mode, dockHeight, display
             )
         }
-        if (Build.VERSION.SDK_INT > 28) options.setLaunchDisplayId(display)
-        val methodName =
-            if (Build.VERSION.SDK_INT >= 28) "setLaunchWindowingMode" else "setLaunchStackId"
+        options.launchDisplayId = display
+        val methodName = "setLaunchWindowingMode"
         val method = ActivityOptions::class.java.getMethod(methodName, Int::class.javaPrimitiveType)
         method.invoke(options, windowMode)
-
         return options
     }
 

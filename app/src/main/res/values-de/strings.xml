@@ -24,8 +24,6 @@
     <string name="recent_apps_desc">Ermöglicht die Anzeige der zuletzt genutzten Apps im Dock</string>
     <string name="notification_access">Benachrichtigungszugriff</string>
     <string name="notification_access_desc">Dient zur Anzeige von Benachrichtigungen. Wenn Sie eine Fehlermeldung über <b>eingeschränkte Einstellung</b> erhalten, klicken sie den Hilfe-Button unten</string>
-    <string name="device_administrator">Geräteverwalter</string>
-    <string name="device_administrator_desc">Dient zum Sperren des Bildschirms. Unbedingt vor der Deinstallation deaktivieren!</string>
     <string name="storage">Speicher</string>
     <string name="storage_desc">Dient zum Ändern des Menüsymbols und des Ereignistons</string>
     <string name="overlays_in_settings">Overlays auf Einstellungen zulassen</string>
@@ -39,8 +37,7 @@
 
     <!-- Appearance page -->
     <string name="appearance">Aussehen</string>
-    <string name="look_and_feel">Aussehen und Gefühl</string>
-    <string name="theme_title">Dock Design</string>
+    <string name="theme_title">Design</string>
     <string name="dark">Dunkel</string>
     <string name="black">Schwarz</string>
     <string name="transparent">Transparent</string>
@@ -49,9 +46,9 @@
     <string name="theme_main_color_title">Hauptfarbe</string>
     <string name="theme_main_color_summary">Definiert Hauptfarbe für Gegenstandshintergründe</string>
     <string name="choose_color">Wähle Fabe</string>
-    <string name="transparency">Transparenz</string>
+    <string name="opacity">Opacity</string>
     <string name="invalid_color">Ungültige Farbe</string>
-    <string name="dock_layout">Dock Layout</string>
+    <string name="dock_layout">Layout</string>
     <string name="wallpaper">Hintergrund</string>
     <string name="presets">Voreinstellungen</string>
     <string name="icon_shape_title">Symbol-Form</string>
@@ -109,7 +106,6 @@
     <string name="enable_qs_pin_title">Pin</string>
     <string name="enable_qs_pin_summary">Sie können das Dock immer noch anheften/entheften, indem Sie nach unten wischen oder das Tastaturkürzel verwenden</string>
     <string name="behaviour">Verhalten</string>
-    <string name="enable_apps_btn_summary">Sie können das Anwendungsmenü immer noch öffnen/schließen, indem Sie auf dem Dock nach oben/unten wischen.</string>
     <string name="activation_method">Aktivierungsmethode</string>
     <string name="activation_method_summary">Die Methode, mit der das ausgeblendete Dock angezeigt wird</string>
     <string name="swipe">Wischen/Schweben</string>
@@ -122,8 +118,7 @@
     <string name="pin_windowed">Anheften bei Fensteranwendungen</string>
     <string name="unpin_fullscreen">Anheften bei Vollbildanwendungen aufheben</string>
     <string name="running_apps_number_title">Anzahl der laufenden/letzten Anwendungen, die angezeigt werden sollen</string>
-    <string name="max_running_apps_landscape">Max. aktuelle Anwendungen (Querformat)</string>
-    <string name="max_running_apps_portrait">Maximal verfügbare Anwendungen (Hochformat)</string>
+    <string name="max_running_apps">Maximal verfügbare Anwendungen</string>
     <string name="center_running_apps_title">Zentrale laufende Anwendungen</string>
     <string name="dock_activation_area_title">Aktivierungsbereich Dock</string>
     <string name="dock_activation_area_summary">Die Höhe des unsichtbaren Aktivierungsbereichs am unteren Bildschirmrand</string>
@@ -199,7 +194,6 @@
     <string name="these_settings_are_intended_fo">Diese Einstellungen sind für fortgeschrittene Benutzer gedacht. Ändern Sie sie nur, wenn Sie wissen, was Sie tun.</string>
     <string name="prefer_last_display">Bevorzugen Sie die zuletzt angebrachte Anzeige</string>
     <string name="prefer_last_display_summary">Bevorzugen Sie das zuletzt angeschlossene Display für die Anzeige von Anwendungen und des Docks</string>
-    <string name="restart_accessibility">Das Ändern dieser Einstellung erfordert einen Neustart des Erreichbarkeitsdienstes</string>
     <string name="open_accessibility">Öffne Barrierefreiheit</string>
     <string name="custom_toasts">Eigene Toasts</string>
     <string name="custom_toasts_summary">Integrierte benutzerdefinierte Toasts für Anwendungen verwenden, wenn das Dock angeheftet ist</string>
@@ -328,5 +322,13 @@
     <string name="lock_device">Lock device</string>
     <string name="toggle_split_screen">Toggle split screen</string>
     <string name="hot_corners_help">Hover the mouse pointer over the corners to trigger their actions</string>
+    <string name="dock_background_opacity">Background opacity</string>
+    <string name="override_dock_background_opacity">Override background opacity</string>
+    <string name="dock_hidden">Dock hidden</string>
+    <string name="dock_hidden_message_handle">Smart Dock has been hidden, you can activate it again by tapping on the handle</string>
+    <string name="close">Close</string>
+    <string name="hide_notifications">Hide notifications</string>
+    <string name="hide_notification_panel">Hide notifications for this app from the panel? You can configure hidden notifications in Notification panel settings</string>
+    <string name="dock_hidden_message_swipe">Smart Dock has been hidden, you can activate it again by:\n- Swiping up from the bottom of the screen (phone)\n- Hovering the mouse pointer near the bottom of the screen (desktop)</string>
 
 </resources>

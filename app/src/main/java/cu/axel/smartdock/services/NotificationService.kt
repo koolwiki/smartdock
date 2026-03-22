@@ -10,12 +10,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Handler
 import android.os.Looper
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.util.Log
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
@@ -30,6 +32,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,14 +41,15 @@ import cu.axel.smartdock.R
 import cu.axel.smartdock.activities.LAUNCHER_ACTION
 import cu.axel.smartdock.adapters.NotificationAdapter
 import cu.axel.smartdock.adapters.NotificationAdapter.OnNotificationClickListener
+import cu.axel.smartdock.dialogs.DockDialog
 import cu.axel.smartdock.utils.AppUtils
 import cu.axel.smartdock.utils.ColorUtils
 import cu.axel.smartdock.utils.DeviceUtils
 import cu.axel.smartdock.utils.Utils
-import androidx.core.content.edit
 
 const val ACTION_HIDE_NOTIFICATION_PANEL = "hide_panel"
 const val ACTION_SHOW_NOTIFICATION_PANEL = "show_panel"
+const val ACTION_RECREATE_NOTIFICATION_VIEWS = "recreate_notification_views"
 const val NOTIFICATION_COUNT_CHANGED = "count_changed"
 const val NOTIFICATION_SERVICE_ACTION = "notification_service_action"
 
@@ -65,7 +69,7 @@ class NotificationService : NotificationListenerService(), OnNotificationClickLi
     private lateinit var notificationActionsLayout: LinearLayout
     private lateinit var context: Context
     private var notificationArea: LinearLayout? = null
-    private var preferLastDisplay = false
+    private var preferSecondaryDisplay = false
     private var y = 0
     private var margins = 0
     private var dockHeight: Int = 0
@@ -75,55 +79,7 @@ class NotificationService : NotificationListenerService(), OnNotificationClickLi
         super.onCreate()
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        preferLastDisplay = sharedPreferences.getBoolean("prefer_last_display", false)
-        context = DeviceUtils.getDisplayContext(this, preferLastDisplay)
-        actionsHeight = Utils.dpToPx(context, 20)
-        windowManager = context.getSystemService(WINDOW_SERVICE) as WindowManager
-        notificationLayoutParams = Utils.makeWindowParams(
-            Utils.dpToPx(context, 300), LinearLayout.LayoutParams.WRAP_CONTENT, context,
-            preferLastDisplay
-        )
-        margins = Utils.dpToPx(context, 2)
-        dockHeight =
-            Utils.dpToPx(context, sharedPreferences.getString("dock_height", "56")!!.toInt())
-        y = (if (DeviceUtils.shouldApplyNavbarFix())
-            dockHeight - DeviceUtils.getNavBarHeight(context)
-        else
-            dockHeight) + margins
-        notificationLayoutParams.x = margins
-        notificationLayoutParams.gravity = Gravity.BOTTOM or if (sharedPreferences.getInt(
-                "dock_layout",
-                -1
-            ) == 0
-        ) Gravity.CENTER_HORIZONTAL else Gravity.END
-        notificationLayoutParams.y = y
-        notificationLayout = LayoutInflater.from(this).inflate(
-            R.layout.notification_entry,
-            null
-        ) as LinearLayout
-        val padding = Utils.dpToPx(context, 10)
-        notificationLayout.setPadding(padding, padding, padding, padding)
-        notificationLayout.setBackgroundResource(R.drawable.round_square)
-        notificationLayout.visibility = View.GONE
-        notificationTitleTv = notificationLayout.findViewById(R.id.notification_title_tv)
-        notificationTextTv = notificationLayout.findViewById(R.id.notification_text_tv)
-        notificationIconIv = notificationLayout.findViewById(R.id.notification_icon_iv)
-        notificationCloseBtn = notificationLayout.findViewById(R.id.notification_close_btn)
-        notificationCloseBtn.alpha = 1f
-        notificationActionsLayout =
-            notificationLayout.findViewById(R.id.notification_actions_layout)
-        windowManager.addView(notificationLayout, notificationLayoutParams)
         handler = Handler(Looper.getMainLooper())
-        notificationLayout.alpha = 0f
-        notificationLayout.setOnHoverListener { _, event ->
-            if (event.action == MotionEvent.ACTION_HOVER_ENTER) {
-                handler.removeCallbacksAndMessages(null)
-            } else if (event.action == MotionEvent.ACTION_HOVER_EXIT) {
-                hideNotification()
-            }
-            false
-        }
-
         val dockReceiver = DockServiceReceiver()
         ContextCompat.registerReceiver(
             this,
@@ -131,6 +87,7 @@ class NotificationService : NotificationListenerService(), OnNotificationClickLi
             IntentFilter(DOCK_SERVICE_ACTION),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
+        createViews()
     }
 
     override fun onListenerConnected() {
@@ -342,7 +299,7 @@ class NotificationService : NotificationListenerService(), OnNotificationClickLi
     fun showNotificationPanel() {
         val layoutParams = Utils.makeWindowParams(
             Utils.dpToPx(context, 400), -2, context,
-            preferLastDisplay
+            preferSecondaryDisplay
         )
         layoutParams.gravity = Gravity.BOTTOM or Gravity.END
         layoutParams.y = y
@@ -513,6 +470,7 @@ class NotificationService : NotificationListenerService(), OnNotificationClickLi
             when (intent.getStringExtra("action")) {
                 ACTION_SHOW_NOTIFICATION_PANEL -> showNotificationPanel()
                 ACTION_HIDE_NOTIFICATION_PANEL -> hideNotificationPanel()
+                ACTION_RECREATE_NOTIFICATION_VIEWS -> restartUI()
             }
         }
     }
@@ -530,23 +488,32 @@ class NotificationService : NotificationListenerService(), OnNotificationClickLi
     }
 
     override fun onNotificationLongClicked(notification: StatusBarNotification, item: View) {
-        val savedApps = sharedPreferences.getStringSet(
-            "ignored_notifications_panel",
-            setOf()
-        )!!
-        val ignoredApps = mutableSetOf<String>()
-        ignoredApps.addAll(savedApps)
-        ignoredApps.add(notification.packageName)
-        Toast.makeText(this, ignoredApps.toString(), Toast.LENGTH_LONG).show()
-        sharedPreferences.edit { putStringSet("ignored_notifications_panel", ignoredApps) }
         item.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-        Toast.makeText(
-            this@NotificationService,
-            R.string.silenced_notifications,
-            Toast.LENGTH_LONG
-        )
-            .show()
-        updateNotificationPanel()
+        val dialog = DockDialog(context, true)
+        dialog.setTitle(R.string.hide_notifications)
+        dialog.setMessage(R.string.hide_notification_panel)
+        dialog.setNegativeButton(R.string.cancel, null)
+        dialog.setPositiveButton(
+            R.string.hide
+        ) { dialog, which ->
+            val savedApps = sharedPreferences.getStringSet(
+                "ignored_notifications_panel",
+                setOf()
+            )!!
+            val ignoredApps = mutableSetOf<String>()
+            ignoredApps.addAll(savedApps)
+            ignoredApps.add(notification.packageName)
+            Toast.makeText(this, ignoredApps.toString(), Toast.LENGTH_LONG).show()
+            sharedPreferences.edit { putStringSet("ignored_notifications_panel", ignoredApps) }
+            Toast.makeText(
+                this@NotificationService,
+                R.string.silenced_notifications,
+                Toast.LENGTH_LONG
+            )
+                .show()
+            updateNotificationPanel()
+        }
+        dialog.show()
     }
 
     override fun onNotificationCancelClicked(notification: StatusBarNotification, item: View) {
@@ -561,12 +528,99 @@ class NotificationService : NotificationListenerService(), OnNotificationClickLi
     private fun updateLayoutParams() {
         dockHeight =
             Utils.dpToPx(context, sharedPreferences.getString("dock_height", "56")!!.toInt())
-        y = (if (DeviceUtils.shouldApplyNavbarFix())
-            dockHeight - DeviceUtils.getNavBarHeight(context)
-        else
-            dockHeight) + margins
+        y =
+            (if (DeviceUtils.shouldApplyNavbarFix())
+                dockHeight - DeviceUtils.getNavBarHeight(context)
+            else
+                dockHeight) + margins
 
         notificationLayoutParams.y = y
         windowManager.updateViewLayout(notificationLayout, notificationLayoutParams)
+    }
+
+    private fun createViews() {
+        preferSecondaryDisplay = sharedPreferences.getBoolean("prefer_last_display", false)
+        context = DeviceUtils.getDisplayContext(this, preferSecondaryDisplay)
+        actionsHeight = Utils.dpToPx(context, 20)
+        windowManager = context.getSystemService(WINDOW_SERVICE) as WindowManager
+        notificationLayoutParams = Utils.makeWindowParams(
+            Utils.dpToPx(context, 300), LinearLayout.LayoutParams.WRAP_CONTENT, this,
+            preferSecondaryDisplay
+        )
+        margins = Utils.dpToPx(context, 2)
+        dockHeight =
+            Utils.dpToPx(context, sharedPreferences.getString("dock_height", "56")!!.toInt())
+        y =
+            (if (DeviceUtils.shouldApplyNavbarFix())
+                dockHeight - DeviceUtils.getNavBarHeight(context)
+            else
+                dockHeight) + margins
+        notificationLayoutParams.x = margins
+        notificationLayoutParams.gravity = Gravity.BOTTOM or if (sharedPreferences.getInt(
+                "dock_layout",
+                -1
+            ) == 0
+        ) Gravity.CENTER_HORIZONTAL else Gravity.END
+        notificationLayoutParams.y = y
+        notificationLayout = LayoutInflater.from(context).inflate(
+            R.layout.notification_entry,
+            null
+        ) as LinearLayout
+        val padding = Utils.dpToPx(context, 10)
+        notificationLayout.setPadding(padding, padding, padding, padding)
+        notificationLayout.setBackgroundResource(R.drawable.round_square)
+        notificationLayout.visibility = View.GONE
+        notificationTitleTv = notificationLayout.findViewById(R.id.notification_title_tv)
+        notificationTextTv = notificationLayout.findViewById(R.id.notification_text_tv)
+        notificationIconIv = notificationLayout.findViewById(R.id.notification_icon_iv)
+        notificationCloseBtn = notificationLayout.findViewById(R.id.notification_close_btn)
+        notificationCloseBtn.alpha = 1f
+        notificationActionsLayout =
+            notificationLayout.findViewById(R.id.notification_actions_layout)
+        windowManager.addView(notificationLayout, notificationLayoutParams)
+
+        notificationLayout.alpha = 0f
+        notificationLayout.setOnHoverListener { _, event ->
+            if (event.action == MotionEvent.ACTION_HOVER_ENTER) {
+                handler.removeCallbacksAndMessages(null)
+            } else if (event.action == MotionEvent.ACTION_HOVER_EXIT) {
+                hideNotification()
+            }
+            false
+        }
+    }
+
+    private fun restartUI() {
+        Log.e(packageName, "restarting notif")
+        removeAllViews()
+        createViews()
+    }
+
+    private fun removeAllViews() {
+        try {
+            if (::windowManager.isInitialized) {
+                notificationPanel?.let { windowManager.removeViewImmediate(it) }
+                if (::notificationLayout.isInitialized) {
+                    windowManager.removeViewImmediate(notificationLayout)
+                }
+            }
+        } catch (_: Exception) {
+        }
+
+        notificationPanel = null
+        notificationsLv = null
+        cancelAllBtn = null
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateLayoutParams()
+        if (Utils.notificationPanelVisible)
+            hideNotificationPanel()
+    }
+
+    override fun onDestroy() {
+        removeAllViews()
+        super.onDestroy()
     }
 }

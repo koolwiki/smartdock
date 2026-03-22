@@ -24,8 +24,6 @@
     <string name="recent_apps_desc">ਰਿਸਟ ਐਪਾ ਨੂੰ ਡੋਕ ਵਿੱਚ ਦਿਖਾਉ</string>
     <string name="notification_access">ਨੋਟੀਫੀਕੇਸਨ ਐਕਸੈਸ</string>
     <string name="notification_access_desc">ਨੋਟੀਫੀਕੇਸਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ</string>
-    <string name="device_administrator">ਡਿਵਾਈਸ ਐਡਮਿਨਸਟਰੇਟਰ</string>
-    <string name="device_administrator_desc">ਸਕ੍ਰੀਨ ਨੂੰ ਲਾਕ ਕਰਨ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ। ਅਣਇੰਸਟੌਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਡਿਸਏਬਲ ਕਰੋ</string>
     <string name="storage">ਸਟੋਰੇਜ</string>
     <string name="storage_desc">ਮੀਨੂ ਆਈਕਨ ਅਤੇ ਇਵੈਂਟ ਆਵਾਜ਼ਾਂ ਨੂੰ ਬਦਲਣ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ</string>
     <string name="overlays_in_settings">ਸੈਟਿਗਾ ਤੇ ਉਵਰਲੇ ਸੂਚਿਤ ਕਰੋ</string>
@@ -39,8 +37,7 @@
 
     <!-- Appearance page -->
     <string name="appearance">ਦਿੱਖਣਾ</string>
-    <string name="look_and_feel">ਦਿੱਖਣਾ ਅਤੇ ਫੀਲ</string>
-    <string name="theme_title">ਡੌਕ ਥੀਮ</string>
+    <string name="theme_title">Theme</string>
     <string name="dark">ਹਨੇਰ</string>
     <string name="black">ਕਾਲਾ</string>
     <string name="transparent">ਪਾਰਦਰਸ਼ੀ</string>
@@ -49,9 +46,9 @@
     <string name="theme_main_color_title">ਥੀਮ ਦਾ ਮੁੱਖ ਰੰਗ</string>
     <string name="theme_main_color_summary">ਆਈਟਮ ਬੈਕਗਰਾਊਂਡ ਲਈ ਮੁੱਖ ਰੰਗ ਪਰਿਭਾਸ਼ਿਤ ਕਰਦਾ ਹੈ</string>
     <string name="choose_color">ਰੰਗ ਚੁਣੋ</string>
-    <string name="transparency">ਪਾਰਦਰਸ਼ਤਾ</string>
+    <string name="opacity">Opacity</string>
     <string name="invalid_color">ਅਵੈਧ ਰੰਗ</string>
-    <string name="dock_layout">ਡੋਕ ਲੇਆਉਟ</string>
+    <string name="dock_layout">Layout</string>
     <string name="wallpaper">ਵਾਲਪੇਪਰ</string>
     <string name="presets">ਪ੍ਰੀਸੈਟਸ</string>
     <string name="icon_shape_title">ਆਈਕਨ ਆਕਾਰ</string>
@@ -109,7 +106,6 @@
     <string name="enable_qs_pin_title">ਪਿੰਨ</string>
     <string name="enable_qs_pin_summary">ਡੋਕ ਨੂੰ ਪਿਨ ਅਤੇ ਅਨਪਿਨ ਡੋਕ ਤੇ ਸਵਾਇਪ ਕਰਕੇ ਜਾ ਕੀਬੋਰਡ ਸਾਰਟਕਟ ਦੁਆਰਾ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</string>
     <string name="behaviour">ਵਿਵਹਾਰ</string>
-    <string name="enable_apps_btn_summary">ਤੁਸੀਂ ਅਜੇ ਵੀ ਡੌਕ \'ਤੇ ਉੱਪਰ/ਹੇਠਾਂ ਸਵਾਈਪ ਕਰਕੇ ਐਪ ਮੀਨੂ ਨੂੰ ਖੋਲ੍ਹ/ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ</string>
     <string name="activation_method">ਐਕਟੀਵੇਸ਼ਨ ਵਿਧੀ</string>
     <string name="activation_method_summary">ਓਹਲੇ ਹੋਣ \'ਤੇ ਡੌਕ ਨੂੰ ਲਿਆਉਣ ਲਈ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਤਰੀਕਾ</string>
     <string name="swipe">ਸਵਾਈਪ/ਹੂਵਰ</string>
@@ -122,8 +118,7 @@
     <string name="pin_windowed">ਵਿੰਡੋਡ ਐਪਸ \'ਤੇ ਪਿੰਨ ਕਰੋ</string>
     <string name="unpin_fullscreen">ਪੂਰੀ ਸਕ੍ਰੀਨ ਐਪਾਂ \'ਤੇ ਅਨਪਿੰਨ ਕਰੋ</string>
     <string name="running_apps_number_title">ਚੱਲ ਰਹੀਆਂ/ਹਾਲੀਆ ਐਪਾਂ ਦੀ ਦਿਖਾਉਣ ਲਈ ਸੰਖਿਆ</string>
-    <string name="max_running_apps_landscape">ਅਧਿਕਤਮ ਹਾਲੀਆ ਐਪਸ (ਲੈਂਡਸਕੇਪ)</string>
-    <string name="max_running_apps_portrait">ਅਧਿਕਤਮ ਹਾਲੀਆ ਐਪਸ (ਪੋਰਟਰੇਟ)</string>
+    <string name="max_running_apps">ਅਧਿਕਤਮ ਹਾਲੀਆ ਐਪਸ</string>
     <string name="center_running_apps_title">ਸੈਂਟਰ ਚੱਲ ਰਹੀਆਂ ਐਪਾਂ</string>
     <string name="dock_activation_area_title">ਡੌਕ ਐਕਟੀਵੇਸ਼ਨ ਖੇਤਰ</string>
     <string name="dock_activation_area_summary">ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ ਇਨਵਿਜੀਵਲ ਐਕਟੀਵੇਸ਼ਨ ਖੇਤਰ ਦੀ ਉਚਾਈ</string>
@@ -200,7 +195,6 @@
     <string name="these_settings_are_intended_fo">ਇਹ ਸੈਟਿੰਗਾਂ ਉੱਨਤ ਉਪਭੋਗਤਾਵਾਂ ਲਈ ਹਨ। ਉਹਨਾਂ ਨੂੰ ਕੇਵਲ ਤਾਂ ਹੀ ਬਦਲੋ ਜੇਕਰ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ ਕਿ ਤੁਸੀਂ ਕੀ ਕਰ ਰਹੇ ਹੋ</string>
     <string name="prefer_last_display">ਸੈਕੰਡਰੀ ਡਿਸਪਲੇ ਨੂੰ ਤਰਜੀਹ ਦਿਓ</string>
     <string name="prefer_last_display_summary">ਐਪਾਂ ਅਤੇ ਡੌਕ ਦਿਖਾਉਣ ਲਈ ਸੈਕੰਡਰੀ ਡਿਸਪਲੇ ਨੂੰ ਤਰਜੀਹ ਦਿਓ</string>
-    <string name="restart_accessibility">ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ accessibility ਸੇਵਾ ਨੂੰ ਮੁੜ ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</string>
     <string name="open_accessibility">Accessibility ਖੋਲੋ</string>
     <string name="custom_toasts">ਕਸਟਮ ਟੋਸਟਾ</string>
     <string name="custom_toasts_summary">ਜਦੋ ਡੋਕ ਪਿਨ ਹੋਵੇ ਐਪਾ ਲਈ ਇਨ-ਵਿਲਡ ਟੋਸਟ ਦੀ ਵਰਤੋਂ ਕਰਨੀ</string>
@@ -329,5 +323,13 @@
     <string name="toggle_split_screen">ਤੌਗਲ ਸਪਲਿਟ ਸਕਰੀਨ</string>
 
     <string name="hot_corners_help">ਕਾਰਨਰ ਦੇ ਐਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਮਾਊਸ ਪੁਆਇੰਟਰ ਨੂੰ ਉਹਨਾਂ ਉੱਤੇ ਰੱਖੋ</string>
+    <string name="dock_background_opacity">Background opacity</string>
+    <string name="override_dock_background_opacity">Override background opacity</string>
+    <string name="dock_hidden">Dock hidden</string>
+    <string name="dock_hidden_message_handle">Smart Dock has been hidden, you can activate it again by tapping on the handle</string>
+    <string name="close">Close</string>
+    <string name="hide_notifications">Hide notifications</string>
+    <string name="hide_notification_panel">Hide notifications for this app from the panel? You can configure hidden notifications in Notification panel settings</string>
+    <string name="dock_hidden_message_swipe">Smart Dock has been hidden, you can activate it again by:\n- Swiping up from the bottom of the screen (phone)\n- Hovering the mouse pointer near the bottom of the screen (desktop)</string>
 
 </resources>

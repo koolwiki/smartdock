@@ -24,8 +24,6 @@
     <string name="recent_apps_desc">Allows to display recent apps on the dock</string>
     <string name="notification_access">Notification access</string>
     <string name="notification_access_desc">Used to display notifications. If you get an error about <b>Restricted setting</b> click the Help button below</string>
-    <string name="device_administrator">Device administrator</string>
-    <string name="device_administrator_desc">Used to lock the screen. Disable before uninstalling</string>
     <string name="storage">Storage</string>
     <string name="storage_desc">Used to change the menu icon and event sounds</string>
     <string name="overlays_in_settings">Allow overlays on Settings</string>
@@ -39,8 +37,7 @@
 
     <!-- Appearance page -->
     <string name="appearance">Appearance</string>
-    <string name="look_and_feel">Look and feel</string>
-    <string name="theme_title">Dock theme</string>
+    <string name="theme_title">Theme</string>
     <string name="dark">Dark</string>
     <string name="black">Black</string>
     <string name="transparent">Transparent</string>
@@ -49,9 +46,9 @@
     <string name="theme_main_color_title">Main color</string>
     <string name="theme_main_color_summary">Defines main color for item backgrounds</string>
     <string name="choose_color">Choose color</string>
-    <string name="transparency">Transparency</string>
+    <string name="opacity">Opacity</string>
     <string name="invalid_color">Invalid color</string>
-    <string name="dock_layout">Dock layout</string>
+    <string name="dock_layout">Layout</string>
     <string name="wallpaper">Wallpaper</string>
     <string name="presets">Presets</string>
     <string name="icon_shape_title">Icon shape</string>
@@ -111,7 +108,6 @@
     <string name="enable_qs_pin_title">Pin</string>
     <string name="enable_qs_pin_summary">You can still pin/unpin the Dock by swiping down on it or using the keyboard shortcut</string>
     <string name="behaviour">Behaviour</string>
-    <string name="enable_apps_btn_summary">You can still open/close the apps menu by swiping up/down on the dock</string>
     <string name="activation_method">Activation method</string>
     <string name="activation_method_summary">The method used to bring up the dock when hidden</string>
     <string name="swipe">Swipe/Hover</string>
@@ -126,8 +122,7 @@
     <string name="pin_windowed">Pin on windowed apps</string>
     <string name="unpin_fullscreen">Unpin on full screen apps</string>
     <string name="running_apps_number_title">Number of running/recent apps to show</string>
-    <string name="max_running_apps_landscape">Max recent apps (landscape)</string>
-    <string name="max_running_apps_portrait">Max recent apps (portrait)</string>
+    <string name="max_running_apps">Max recent apps</string>
     <string name="center_running_apps_title">Center running apps</string>
     <string name="dock_activation_area_title">Dock activation area</string>
     <string name="dock_activation_area_summary">The height of the invisible activation area at the bottom of the screen</string>
@@ -204,7 +199,6 @@
     <string name="these_settings_are_intended_fo">These settings are intended for advanced users. Only change them if you know what you are doing</string>
     <string name="prefer_last_display">Prefer secondary displays</string>
     <string name="prefer_last_display_summary">Prefer secondary displays for displaying apps and the dock</string>
-    <string name="restart_accessibility">Changing this setting requires restarting the Accessibility service</string>
     <string name="open_accessibility">Open Accessibility</string>
     <string name="custom_toasts">Custom Toasts</string>
     <string name="custom_toasts_summary">Use built-in custom Toasts for apps when the Dock is pinned</string>
@@ -326,4 +320,12 @@
     <string name="launch_assistant">Launch assistant app</string>
     <string name="lock_device">Lock device</string>
     <string name="toggle_split_screen">Toggle split screen</string>
+    <string name="dock_background_opacity">Background opacity</string>
+    <string name="override_dock_background_opacity">Override background opacity</string>
+    <string name="dock_hidden">Dock hidden</string>
+    <string name="dock_hidden_message_handle">Smart Dock has been hidden, you can activate it again by tapping on the handle</string>
+    <string name="close">Close</string>
+    <string name="hide_notifications">Hide notifications</string>
+    <string name="hide_notification_panel">Hide notifications for this app from the panel? You can configure hidden notifications in Notification panel settings</string>
+    <string name="dock_hidden_message_swipe">Smart Dock has been hidden, you can activate it again by:\n- Swiping up from the bottom of the screen (phone)\n- Hovering the mouse pointer near the bottom of the screen (desktop)</string>
 </resources>

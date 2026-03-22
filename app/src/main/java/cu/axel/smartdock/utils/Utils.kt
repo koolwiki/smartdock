@@ -11,11 +11,11 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.view.Display
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.content.edit
+import androidx.core.graphics.createBitmap
 import androidx.preference.PreferenceManager
 import cu.axel.smartdock.R
 import java.io.BufferedReader
@@ -27,8 +27,6 @@ import java.io.InputStreamReader
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
-import androidx.core.graphics.createBitmap
-import androidx.core.content.edit
 
 object Utils {
     var notificationPanelVisible = false
@@ -78,12 +76,8 @@ object Utils {
         var bitmap: Bitmap? = null
         val contentResolver = context.contentResolver
         try {
-            bitmap = if (Build.VERSION.SDK_INT < 28) {
-                MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            } else {
-                val source = ImageDecoder.createSource(contentResolver, uri)
-                ImageDecoder.decodeBitmap(source)
-            }
+            val source = ImageDecoder.createSource(contentResolver, uri)
+            bitmap = ImageDecoder.decodeBitmap(source)
         } catch (_: Exception) {
         }
         return bitmap
@@ -129,22 +123,18 @@ object Utils {
 
     fun makeWindowParams(
         width: Int, height: Int, context: Context,
-        secondary: Boolean = false
+        secondary: Boolean = false,
+        accessibilityWindow: Boolean = false
     ): WindowManager.LayoutParams {
-
         val displayId =
             if (secondary) DeviceUtils.getSecondaryDisplay(context).displayId else Display.DEFAULT_DISPLAY
-
-        val displayWidth = DeviceUtils.getDisplayMetrics(context, displayId).widthPixels
-        val displayHeight = DeviceUtils.getDisplayMetrics(context, displayId).heightPixels
+        val displayWidth = DeviceUtils.getDisplayBounds(context, displayId).width()
+        val displayHeight = DeviceUtils.getDisplayBounds(context, displayId).height()
         val layoutParams = WindowManager.LayoutParams()
         layoutParams.format = PixelFormat.TRANSLUCENT
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         layoutParams.type =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            else
-                WindowManager.LayoutParams.TYPE_PHONE
+            if (accessibilityWindow) WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         layoutParams.width = displayWidth.coerceAtMost(width)
         layoutParams.height = displayHeight.coerceAtMost(height)
         return layoutParams
@@ -180,7 +170,7 @@ object Utils {
             } else if (value is Int) {
                 type = "integer"
             }
-            if (value !is Set<*>)
+            if (value !is Set<*> && !value.toString().contains("://"))
                 stringBuilder.append(type).append(" ").append(key).append(" ")
                     .append(value.toString()).append("\n")
         }

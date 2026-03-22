@@ -24,8 +24,6 @@
     <string name="recent_apps_desc">允許在 Dock 上顯示最近的應用程式</string>
     <string name="notification_access">通知存取</string>
     <string name="notification_access_desc">用於顯示通知。如果出現<b>受限制設定</b>錯誤，請點擊下方的幫助按鈕</string>
-    <string name="device_administrator">裝置管理員</string>
-    <string name="device_administrator_desc">用於鎖定螢幕。卸載前請先停用</string>
     <string name="storage">儲存空間</string>
     <string name="storage_desc">用於更改選單圖示和事件聲音</string>
     <string name="overlays_in_settings">允許在設置中顯示覆蓋層</string>
@@ -39,8 +37,7 @@
 
     <!-- Appearance page -->
     <string name="appearance">外觀</string>
-    <string name="look_and_feel">外觀和感覺</string>
-    <string name="theme_title">Dock 主題</string>
+    <string name="theme_title">Theme</string>
     <string name="dark">深色</string>
     <string name="black">黑色</string>
     <string name="transparent">透明</string>
@@ -49,9 +46,9 @@
     <string name="theme_main_color_title">主色</string>
     <string name="theme_main_color_summary">定義項目背景的主色</string>
     <string name="choose_color">選擇顏色</string>
-    <string name="transparency">透明度</string>
+    <string name="opacity">Opacity</string>
     <string name="invalid_color">無效的顏色</string>
-    <string name="dock_layout">Dock 佈局</string>
+    <string name="dock_layout">Layout</string>
     <string name="wallpaper">壁紙</string>
     <string name="presets">預設</string>
     <string name="icon_shape_title">圖示形狀</string>
@@ -109,7 +106,6 @@
     <string name="enable_qs_pin_title">釘選</string>
     <string name="enable_qs_pin_summary">您仍然可以通過在 Dock 上向下滑動或使用鍵盤快捷鍵來釘選/取消釘選 Dock</string>
     <string name="behaviour">行為</string>
-    <string name="enable_apps_btn_summary">您仍然可以通過在 Dock 上向上/向下滑動來開啟/關閉應用程式選單</string>
     <string name="activation_method">啟動方法</string>
     <string name="activation_method_summary">隱藏時調出 Dock 的方法</string>
     <string name="swipe">滑動/懸停</string>
@@ -122,8 +118,7 @@
     <string name="pin_windowed">窗口應用程式釘選</string>
     <string name="unpin_fullscreen">全螢幕應用程式取消釘選</string>
     <string name="running_apps_number_title">顯示的運行/最近應用程式數量</string>
-    <string name="max_running_apps_landscape">最大最近應用程式（橫向）</string>
-    <string name="max_running_apps_portrait">最大最近應用程式（縱向）</string>
+    <string name="max_running_apps">最大最近應用程式</string>
     <string name="center_running_apps_title">居中運行的應用程式</string>
     <string name="dock_activation_area_title">Dock 啟動區域</string>
     <string name="dock_activation_area_summary">螢幕底部的隱形啟動區域的高度</string>
@@ -199,7 +194,6 @@
     <string name="these_settings_are_intended_fo">這些設置是為高級用戶設計的。只有在您知道自己在做什麼時才更改它們</string>
     <string name="prefer_last_display">偏好最後連接的顯示器</string>
     <string name="prefer_last_display_summary">偏好最後連接的顯示器來顯示應用程式和 Dock</string>
-    <string name="restart_accessibility">更改此設置需要重新啟動無障礙服務</string>
     <string name="open_accessibility">開啟無障礙</string>
     <string name="custom_toasts">自訂 Toasts</string>
     <string name="custom_toasts_summary">在 Dock 釘選時使用內建的自訂 Toasts</string>
@@ -329,5 +323,13 @@
     <string name="toggle_split_screen">Toggle split screen</string>
 
     <string name="hot_corners_help">Hover the mouse pointer over the corners to trigger their actions</string>
+    <string name="dock_background_opacity">Background opacity</string>
+    <string name="override_dock_background_opacity">Override background opacity</string>
+    <string name="dock_hidden">Dock hidden</string>
+    <string name="dock_hidden_message_handle">Smart Dock has been hidden, you can activate it again by tapping on the handle</string>
+    <string name="close">Close</string>
+    <string name="hide_notifications">Hide notifications</string>
+    <string name="hide_notification_panel">Hide notifications for this app from the panel? You can configure hidden notifications in Notification panel settings</string>
+    <string name="dock_hidden_message_swipe">Smart Dock has been hidden, you can activate it again by:\n- Swiping up from the bottom of the screen (phone)\n- Hovering the mouse pointer near the bottom of the screen (desktop)</string>
 
 </resources>
